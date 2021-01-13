@@ -2,7 +2,7 @@ package net.introvertscove.survivalserver.beans;
 
 import java.time.Instant;
 
-public class LimboExceptionStatusBean {
+public class LimboExemptionStatusBean {
 
 	private boolean exceptionActive;
 	private String adminWhoAddedException;
@@ -10,7 +10,7 @@ public class LimboExceptionStatusBean {
 	private int exceptionExpiresAfterSeconds;
 	private String excemptionReason;
 	
-	public LimboExceptionStatusBean(boolean exceptionActive, String adminWhoAddedException,
+	public LimboExemptionStatusBean(boolean exceptionActive, String adminWhoAddedException,
 			Instant exceptionAddedStartingAt, int exceptionExpiresAfterSeconds, String excemptionReason) {
 		super();
 		this.exceptionActive = exceptionActive;

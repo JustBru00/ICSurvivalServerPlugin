@@ -25,7 +25,7 @@ public class IntrovertsPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		
+		saveDefaultConfig();
 		
 	}
 

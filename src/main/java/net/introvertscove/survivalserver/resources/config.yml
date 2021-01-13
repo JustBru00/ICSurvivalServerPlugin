@@ -14,7 +14,13 @@ spectator_accounts:
   disable_spectator_accounts: false
   all_players_are_forced_spectator: false
   non_members_are_spectator: true  
-  
+
+limbo:
+  sent_to_to_limbo_message: 'Hey there {MC_USERNAME},\nYou have been automatically been given the Limbo role.\nSee the following link for what this means for your future on The Introverts Cove:: https:://introvertscove.net/limbo-faq'
+  time_from_last_logout_until:
+    sent_to_limbo: 1209600
+    auto_retire_danger_message: 2160000
+    auto_retire: 2419200    
   
 rest_api_server:
   allowed_api_keys:
