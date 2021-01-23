@@ -1,6 +1,6 @@
 name: IntrovertsCoveSurvivalServer
 version: 1.0-INDEV
-main: net.introvertscove.survivalserver.plugin.SurvivalServerPluginMain
+main: net.introvertscove.survivalserver.plugin.IntrovertsPlugin
 authors: [JustBru00, Justin Brubaker]
 api-version: 1.16
 
@@ -8,7 +8,7 @@ commands:
   member:
     description: This command allows adding and removing members to the server.
   spectatoraccounts:
-    description: This command allows adding and removing spectator accounts. It also allows setting different options involved with spoectator accounts.
+    description: This command allows adding and removing spectator accounts. It also allows setting different options involved with spectator accounts.
   limbo:
     description: This command allows adding/viewing limbo excemptions.
   whois:

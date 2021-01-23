@@ -1,17 +1,17 @@
 package net.introvertscove.survivalserver.beans;
 
-import java.time.Instant;
+
 
 public class LimboExemptionStatusBean {
 
 	private boolean exceptionActive;
 	private String adminWhoAddedException;
-	private Instant exceptionAddedStartingAt;
+	private long exceptionAddedStartingAt;
 	private int exceptionExpiresAfterSeconds;
 	private String excemptionReason;
 	
 	public LimboExemptionStatusBean(boolean exceptionActive, String adminWhoAddedException,
-			Instant exceptionAddedStartingAt, int exceptionExpiresAfterSeconds, String excemptionReason) {
+			long exceptionAddedStartingAt, int exceptionExpiresAfterSeconds, String excemptionReason) {
 		super();
 		this.exceptionActive = exceptionActive;
 		this.adminWhoAddedException = adminWhoAddedException;
@@ -36,11 +36,11 @@ public class LimboExemptionStatusBean {
 		this.adminWhoAddedException = adminWhoAddedException;
 	}
 
-	public Instant getExceptionAddedStartingAt() {
+	public long getExceptionAddedStartingAt() {
 		return exceptionAddedStartingAt;
 	}
 
-	public void setExceptionAddedStartingAt(Instant exceptionAddedStartingAt) {
+	public void setExceptionAddedStartingAt(long exceptionAddedStartingAt) {
 		this.exceptionAddedStartingAt = exceptionAddedStartingAt;
 	}
 

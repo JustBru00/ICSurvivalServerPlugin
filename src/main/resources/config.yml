@@ -12,8 +12,8 @@ spectator_accounts:
   display_action_bar: true
   force_spectator_gamemode_on_join: true
   disable_spectator_accounts: false
-  all_players_are_forced_spectator: false
-  non_members_are_spectator: true  
+  non_members_are_spectator: false
+  prevent_chat: true
 
 limbo:
   sent_to_to_limbo_message: 'Hey there {MC_USERNAME},\nYou have been automatically been given the Limbo role.\nSee the following link for what this means for your future on The Introverts Cove:: https:://introvertscove.net/limbo-faq'

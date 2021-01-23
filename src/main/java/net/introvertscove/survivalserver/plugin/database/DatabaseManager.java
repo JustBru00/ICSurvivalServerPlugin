@@ -1,29 +1,37 @@
 package net.introvertscove.survivalserver.plugin.database;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import net.introvertscove.survivalserver.beans.LimboExemptionStatusBean;
 import net.introvertscove.survivalserver.beans.LimboStatusBean;
 import net.introvertscove.survivalserver.beans.MemberDataBean;
 import net.introvertscove.survivalserver.plugin.IntrovertsPlugin;
+import net.introvertscove.survivalserver.plugin.utils.Messager;
 import net.introvertscove.survivalserver.plugin.utils.PluginFile;
 
 public class DatabaseManager {
+	
+	private static ConcurrentHashMap<UUID,Instant> onlinePlayerSessionStorage = new ConcurrentHashMap<UUID, Instant>();
 
 	private static PluginFile memberData = null;
 	private static PluginFile sessionHistory = null;
 	
 	public static void init() {
-		memberData = new PluginFile(IntrovertsPlugin.getInstance(), "member_data.yml", "/resources/member_data.yml");
-		sessionHistory = new PluginFile(IntrovertsPlugin.getInstance(), "session_history.yml", "/resources/session_history.yml");		
+		memberData = new PluginFile(IntrovertsPlugin.getInstance(), "member_data.yml");
+		sessionHistory = new PluginFile(IntrovertsPlugin.getInstance(), "session_history.yml");		
 	}	
 	
-	private static PluginFile getMemberData() {
+	public static PluginFile getMemberData() {
 		return memberData;
 	}
 	
@@ -31,7 +39,7 @@ public class DatabaseManager {
 		return sessionHistory;
 	}
 	
-	private static void saveMemberData() {
+	public static void saveMemberData() {
 		memberData.save();
 	}
 	
@@ -39,18 +47,119 @@ public class DatabaseManager {
 		sessionHistory.save();
 	}
 	
-	private static void loadMemberData() {
+	private static void reloadMemberData() {
 		memberData.reload();
 	}
 	
-	private static void loadSessionHistory() {
+	private static void reloadSessionHistory() {
 		sessionHistory.reload();
+	}
+	
+	/**
+	 * Generates a {@link MemberDataBean} with the given UUID and the rest of the values set to defaults.
+	 * @param uuid
+	 * @return
+	 */
+	public static MemberDataBean getDefaultMemberDataBean(UUID uuid, long discordId) {
+		LimboExemptionStatusBean limboExemption = new LimboExemptionStatusBean(false, "None", -1L, -1, "None");
+		LimboStatusBean limboStatus = new LimboStatusBean(-1L, -1L, false, -1L, false, 
+				-1L, false, -1L, false, -1L, false, 
+				-1L, false);
+		
+		MemberDataBean memberData = new MemberDataBean(uuid);
+		memberData.setDiscordId(discordId);
+		memberData.setLastIpAddress("None recorded");
+		memberData.setLimboExcemptionStatus(limboExemption);
+		memberData.setLimboStatus(limboStatus);
+		memberData.setSpectatorAccountUuids(new ArrayList<UUID>());	
+		return memberData;
+	}
+	
+	public static boolean isSpectatorAccount(UUID uuid) {		
+		for (String key : memberData.getKeys(false)) {
+			List<String> spectatorAccounts = memberData.getStringList(key + ".spectator_accounts");
+			for (String spectatorId : spectatorAccounts) {
+				if (uuid.toString().equalsIgnoreCase(spectatorId)) {
+					// Is a spectator account
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static void logPlayerLoginToSessionHistory(UUID uuid) {
+		onlinePlayerSessionStorage.put(uuid, Instant.now());
+	}
+	
+	public static void logPlayerLogoutToSessionHistory(UUID uuid) {
+		Instant logoutTime = Instant.now();
+		Instant loginTime = onlinePlayerSessionStorage.get(uuid);
+		
+		if (loginTime == null) {
+			Messager.msgConsole("Failed to retrive login time from HashMap for " + uuid + ".");
+			return;
+		}		
+		
+		long secondsOnline = Duration.between(loginTime, logoutTime).getSeconds();
+		
+		if (sessionHistory.getConfigurationSection(uuid.toString()) == null) {
+			sessionHistory.set(uuid.toString() + ".total_playtime_seconds", 0L);
+			sessionHistory.save();
+		}
+		
+		long secondsOfPlayTime = sessionHistory.getLong(uuid.toString() + ".total_playtime_seconds");
+		secondsOfPlayTime = secondsOfPlayTime + secondsOnline;
+		sessionHistory.set(uuid.toString() + ".total_playtime_seconds", secondsOfPlayTime);
+		
+		sessionHistory.set(uuid.toString() + "." + loginTime.toEpochMilli(), logoutTime.toEpochMilli());
+		sessionHistory.save();
+	}
+	
+	public static void saveMemberDataToFile(MemberDataBean m) {
+		String prefix = m.getMinecraftUuid().toString();
+		
+		List<String> spectators = new ArrayList<String>();
+		for (UUID u : m.getSpectatorAccountUuids()) {
+			spectators.add(u.toString());
+		}
+		
+		memberData.set(prefix + ".discord_id", m.getDiscordId());
+		memberData.set(prefix + ".spectator_accounts", spectators);
+		memberData.set(prefix + ".last_ip", m.getLastIpAddress());
+		
+		LimboExemptionStatusBean exemption =  m.getLimboExcemptionStatus();
+		memberData.set(prefix + ".limbo.exemption.active", exemption.isExceptionActive());
+		memberData.set(prefix + ".limbo.exemption.by", exemption.getAdminWhoAddedException());
+		memberData.set(prefix + ".limbo.exemption.at", exemption.getExceptionAddedStartingAt());
+		memberData.set(prefix + ".limbo.exemption.expires_after", exemption.getExceptionExpiresAfterSeconds());
+		memberData.set(prefix + ".limbo.exemption.reason", exemption.getExcemptionReason());
+		
+		LimboStatusBean limboStatus = m.getLimboStatus();
+		memberData.set(prefix + ".limbo.active.last_logout", limboStatus.getLastLogout());
+		memberData.set(prefix + ".limbo.active.nag_message.last_sent_at", limboStatus.getNagMessageLastSentAt());
+		memberData.set(prefix + ".limbo.active.nag_message.message_successful", limboStatus.isNagMessageSuccessful());
+		
+		memberData.set(prefix + ".in_limbo.placed_in_limbo_at", limboStatus.getPlacedInLimboAt());
+		memberData.set(prefix + ".in_limbo.currently_in_limbo", limboStatus.isCurrentlyInLimbo());
+		memberData.set(prefix + ".in_limbo.message.sent", limboStatus.isInLimboMessageSent());
+		memberData.set(prefix + ".in_limbo.message.at", limboStatus.getInLimboMessageSentAt());
+		
+		memberData.set(prefix + ".retire_danger.message.sent", limboStatus.isRetiredDangerMessageSent());
+		memberData.set(prefix + ".retire_danger.message.at", limboStatus.getRetireDangerMessageSentAt());
+		
+		memberData.set(prefix + ".retired.message_to_player.sent", limboStatus.isRetiredMessageSentToPlayer());
+		memberData.set(prefix + ".retired.message_to_player.at", limboStatus.getRetiredMessageSentToPlayerAt());
+		memberData.set(prefix + ".retired.message_to_shouts.sent", limboStatus.isRetiredMessageSentToShouts());
+		memberData.set(prefix + ".retired.message_to_shouts.at", limboStatus.getRetiredMessageSentToShoutsAt());
+		
+		memberData.save();
 	}
 	
 	public static Optional<MemberDataBean> getMemberData(UUID memberUuid) {
 		ConfigurationSection memberSection = memberData.getConfigurationSection(memberUuid.toString());
 		
-		if (memberSection == null) {
+		if (memberSection == null || memberData.getString(memberUuid.toString()).equalsIgnoreCase("Removed Member")) {
 			return Optional.empty();
 		}
 		
@@ -66,30 +175,30 @@ public class DatabaseManager {
 		// limbo.exemption.X
 		boolean exemptionActive = memberSection.getBoolean("limbo.exemption.active");
 		String exemptionBy = memberSection.getString("limbo.exemption.by");
-		Instant exemptionAt = Instant.ofEpochMilli(memberSection.getLong("limbo.exemption.at"));
+		long exemptionAt = memberSection.getLong("limbo.exemption.at");
 		int exemptionExpiresAfter = memberSection.getInt("limbo.exemption.expires_after");
 		String exemptionReason = memberSection.getString("limbo.exemption.reason");
 		
 		// limbo.active.X
-		Instant activeLastLogout = Instant.ofEpochMilli(memberSection.getLong("limbo.active.last_logout"));
-		Instant activeNagMessageLastSentAt = Instant.ofEpochMilli(memberSection.getLong("limbo.active.nag_message.last_sent_at"));
+		long activeLastLogout = memberSection.getLong("limbo.active.last_logout");
+		long activeNagMessageLastSentAt = memberSection.getLong("limbo.active.nag_message.last_sent_at");
 		boolean activeNagMessageSuccessful = memberSection.getBoolean("limbo.active.nag_message.message_successful");
 		
 		// limbo.in_limbo.X
-		Instant placedInLimboAt = Instant.ofEpochMilli(memberSection.getLong("limbo.in_limbo.placed_in_limbo_at"));
+		long placedInLimboAt = memberSection.getLong("limbo.in_limbo.placed_in_limbo_at");
 		boolean currentlyInLimbo = memberSection.getBoolean("limbo.in_limbo.currently_in_limbo");
-		Instant inLimboMessageSentAt = Instant.ofEpochMilli(memberSection.getLong("limbo.in_limbo.message.at"));
+		long inLimboMessageSentAt = memberSection.getLong("limbo.in_limbo.message.at");
 		boolean inLimboMessageSent = memberSection.getBoolean("limbo.in_limbo.message.sent");
 		
 		// limbo.retire_danger.X
 		boolean retireDangerMessageSent = memberSection.getBoolean("limbo.retire_danger.message.sent");
-		Instant retireDangerMessageSentAt = Instant.ofEpochMilli(memberSection.getLong("limbo.retire_danger.message.at"));
+		long retireDangerMessageSentAt = memberSection.getLong("limbo.retire_danger.message.at");
 		
 		// limbo.retired.X
 		boolean retiredMessageToPlayerSent = memberSection.getBoolean("limbo.retired.message_to_player.sent");
-		Instant retiredMessageToPlayerSentAt = Instant.ofEpochMilli(memberSection.getLong("limbo.retired.message_to_player.at"));
+		long retiredMessageToPlayerSentAt = memberSection.getLong("limbo.retired.message_to_player.at");
 		boolean retiredMessageToShoutsSent = memberSection.getBoolean("limbo.retired.message_to_shouts.sent");
-		Instant retiredMessageToShoutsSentAt = Instant.ofEpochMilli(memberSection.getLong("limbo.retired.message_to_shouts.at"));
+		long retiredMessageToShoutsSentAt = memberSection.getLong("limbo.retired.message_to_shouts.at");
 		
 		LimboExemptionStatusBean limboExemption = new LimboExemptionStatusBean(exemptionActive, exemptionBy, exemptionAt, exemptionExpiresAfter, exemptionReason);
 		LimboStatusBean limboStatus = new LimboStatusBean(activeLastLogout, activeNagMessageLastSentAt, activeNagMessageSuccessful, placedInLimboAt, currentlyInLimbo, 

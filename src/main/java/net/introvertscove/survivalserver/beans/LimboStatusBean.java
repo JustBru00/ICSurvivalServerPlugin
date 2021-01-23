@@ -1,31 +1,29 @@
 package net.introvertscove.survivalserver.beans;
 
-import java.time.Instant;
-
 public class LimboStatusBean {
 
-	private Instant lastLogout;
-	private Instant nagMessageLastSentAt;
+	private long lastLogout;
+	private long nagMessageLastSentAt;
 	private boolean nagMessageSuccessful;
 
-	private Instant placedInLimboAt;
+	private long placedInLimboAt;
 	private boolean currentlyInLimbo;
-	private Instant inLimboMessageSentAt;
+	private long inLimboMessageSentAt;
 	private boolean inLimboMessageSent;
 
-	private Instant retireDangerMessageSentAt;
+	private long retireDangerMessageSentAt;
 	private boolean retiredDangerMessageSent;
 
-	private Instant retiredMessageSentToPlayerAt;
+	private long retiredMessageSentToPlayerAt;
 	private boolean retiredMessageSentToPlayer;
 
-	private Instant retiredMessageSentToShoutsAt;
+	private long retiredMessageSentToShoutsAt;
 	private boolean retiredMessageSentToShouts;
 
-	public LimboStatusBean(Instant lastLogout, Instant nagMessageLastSentAt, boolean nagMessageSuccessful,
-			Instant placedInLimboAt, boolean currentlyInLimbo, Instant inLimboMessageSentAt, boolean inLimboMessageSent,
-			Instant retireDangerMessageSentAt, boolean retiredDangerMessageSent, Instant retiredMessageSentToPlayerAt,
-			boolean retiredMessageSentToPlayer, Instant retiredMessageSentToShoutsAt,
+	public LimboStatusBean(long lastLogout, long nagMessageLastSentAt, boolean nagMessageSuccessful,
+			long placedInLimboAt, boolean currentlyInLimbo, long inLimboMessageSentAt, boolean inLimboMessageSent,
+			long retireDangerMessageSentAt, boolean retiredDangerMessageSent, long retiredMessageSentToPlayerAt,
+			boolean retiredMessageSentToPlayer, long retiredMessageSentToShoutsAt,
 			boolean retiredMessageSentToShouts) {
 		super();
 		this.lastLogout = lastLogout;
@@ -43,19 +41,19 @@ public class LimboStatusBean {
 		this.retiredMessageSentToShouts = retiredMessageSentToShouts;
 	}
 
-	public Instant getLastLogout() {
+	public long getLastLogout() {
 		return lastLogout;
 	}
 
-	public void setLastLogout(Instant lastLogout) {
+	public void setLastLogout(long lastLogout) {
 		this.lastLogout = lastLogout;
 	}
 
-	public Instant getNagMessageLastSentAt() {
+	public long getNagMessageLastSentAt() {
 		return nagMessageLastSentAt;
 	}
 
-	public void setNagMessageLastSentAt(Instant nagMessageLastSentAt) {
+	public void setNagMessageLastSentAt(long nagMessageLastSentAt) {
 		this.nagMessageLastSentAt = nagMessageLastSentAt;
 	}
 
@@ -67,11 +65,11 @@ public class LimboStatusBean {
 		this.nagMessageSuccessful = nagMessageSuccessful;
 	}
 
-	public Instant getPlacedInLimboAt() {
+	public long getPlacedInLimboAt() {
 		return placedInLimboAt;
 	}
 
-	public void setPlacedInLimboAt(Instant placedInLimboAt) {
+	public void setPlacedInLimboAt(long placedInLimboAt) {
 		this.placedInLimboAt = placedInLimboAt;
 	}
 
@@ -83,11 +81,11 @@ public class LimboStatusBean {
 		this.currentlyInLimbo = currentlyInLimbo;
 	}
 
-	public Instant getInLimboMessageSentAt() {
+	public long getInLimboMessageSentAt() {
 		return inLimboMessageSentAt;
 	}
 
-	public void setInLimboMessageSentAt(Instant inLimboMessageSentAt) {
+	public void setInLimboMessageSentAt(long inLimboMessageSentAt) {
 		this.inLimboMessageSentAt = inLimboMessageSentAt;
 	}
 
@@ -99,11 +97,11 @@ public class LimboStatusBean {
 		this.inLimboMessageSent = inLimboMessageSent;
 	}
 
-	public Instant getRetireDangerMessageSentAt() {
+	public long getRetireDangerMessageSentAt() {
 		return retireDangerMessageSentAt;
 	}
 
-	public void setRetireDangerMessageSentAt(Instant retireDangerMessageSentAt) {
+	public void setRetireDangerMessageSentAt(long retireDangerMessageSentAt) {
 		this.retireDangerMessageSentAt = retireDangerMessageSentAt;
 	}
 
@@ -115,11 +113,11 @@ public class LimboStatusBean {
 		this.retiredDangerMessageSent = retiredDangerMessageSent;
 	}
 
-	public Instant getRetiredMessageSentToPlayerAt() {
+	public long getRetiredMessageSentToPlayerAt() {
 		return retiredMessageSentToPlayerAt;
 	}
 
-	public void setRetiredMessageSentToPlayerAt(Instant retiredMessageSentToPlayerAt) {
+	public void setRetiredMessageSentToPlayerAt(long retiredMessageSentToPlayerAt) {
 		this.retiredMessageSentToPlayerAt = retiredMessageSentToPlayerAt;
 	}
 
@@ -131,11 +129,11 @@ public class LimboStatusBean {
 		this.retiredMessageSentToPlayer = retiredMessageSentToPlayer;
 	}
 
-	public Instant getRetiredMessageSentToShoutsAt() {
+	public long getRetiredMessageSentToShoutsAt() {
 		return retiredMessageSentToShoutsAt;
 	}
 
-	public void setRetiredMessageSentToShoutsAt(Instant retiredMessageSentToShoutsAt) {
+	public void setRetiredMessageSentToShoutsAt(long retiredMessageSentToShoutsAt) {
 		this.retiredMessageSentToShoutsAt = retiredMessageSentToShoutsAt;
 	}
 
