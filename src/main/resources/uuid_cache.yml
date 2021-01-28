@@ -1,0 +1,5 @@
+# This yml files will store cached UUIDs.
+# WHY IS THIS NOT JUST BUILT INTO THE SPIGOT API?
+uuid:
+  last_name: JustBru00
+  at: timestamp

@@ -22,6 +22,8 @@ public class MemberCommand implements CommandExecutor {
 				Messager.msgSender("&cSorry you aren't built different.", sender);
 				return true;
 			}
+			
+			
 
 			if (args.length == 0) {
 				Messager.msgSender(

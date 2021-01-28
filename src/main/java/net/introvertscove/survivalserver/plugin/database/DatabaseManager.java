@@ -3,13 +3,11 @@ package net.introvertscove.survivalserver.plugin.database;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import net.introvertscove.survivalserver.beans.LimboExemptionStatusBean;
@@ -25,11 +23,21 @@ public class DatabaseManager {
 
 	private static PluginFile memberData = null;
 	private static PluginFile sessionHistory = null;
+	private static PluginFile uuidCache = null;
 	
 	public static void init() {
 		memberData = new PluginFile(IntrovertsPlugin.getInstance(), "member_data.yml");
 		sessionHistory = new PluginFile(IntrovertsPlugin.getInstance(), "session_history.yml");		
+		uuidCache = new PluginFile(IntrovertsPlugin.getInstance(), "uuid_cache.yml");	
 	}	
+	
+	public static PluginFile getUuidCache() {
+		return uuidCache;
+	}
+	
+	public static void saveUuidCache() {
+		uuidCache.save();
+	}
 	
 	public static PluginFile getMemberData() {
 		return memberData;

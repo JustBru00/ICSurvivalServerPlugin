@@ -33,22 +33,12 @@ public class PlayerLoginLogoutListener implements Listener {
 					|| (!SpectatorAccountsOptions.isSpectatorAccountsDisabled()
 							&& DatabaseManager.isSpectatorAccount(playerUuid))) {
 				// is a spectator
-
-				if (SpectatorAccountsOptions.doForceSpectatorGamemodeOnJoin()) {
-					Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
-
-						public void run() {
-							// Set to spectator gamemode
-							Bukkit.getPlayer(playerUuid).setGameMode(GameMode.SPECTATOR);
-						}
-					}, 5);
-				}
 				return;
 			}
 
 			e.setLoginResult(Result.KICK_WHITELIST);
 			e.setKickMessage(Messager.color(
-					"&cSorry your account is not on the member list for the Introvert's Cove.\n&cSee &fhttps://www.introvertscove.net/applications &cto apply to join the server.\n\n&cIf you believe this is in error please contact us @ contact@introvertcove.com."));
+					"&cSorry your account is not on the member list for the Introvert's Cove.\n&cSee &fhttps://www.introvertscove.net/applications &cto apply to join the server.\n\n&cIf you believe this is in error please contact us at contact@introvertcove.com."));
 			return;
 		}
 	}
@@ -59,8 +49,20 @@ public class PlayerLoginLogoutListener implements Listener {
 		DatabaseManager.logPlayerLoginToSessionHistory(playerId);
 		Optional<MemberDataBean> memberData = DatabaseManager.getMemberData(playerId);
 
-		if (!memberData.isPresent() && e.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
-			Messager.msgConsole("The member data for " + playerId + " couldn't be found. WHAT IS HAPPENING!!!");
+		if (!memberData.isPresent()) {			
+			if (DatabaseManager.isSpectatorAccount(playerId) && SpectatorAccountsOptions.doForceSpectatorGamemodeOnJoin()) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+
+					public void run() {
+						// Set to spectator gamemode
+						try {
+							Bukkit.getPlayer(playerId).setGameMode(GameMode.SPECTATOR);
+						} catch (NullPointerException e) {
+							Messager.msgConsole("[PlayerLoginLogoutListener] Spectator player logged out before I could set them to spectator gamemode.");
+						}
+					}
+				}, 5);
+			}
 			return;
 		}
 
@@ -75,8 +77,7 @@ public class PlayerLoginLogoutListener implements Listener {
 		DatabaseManager.logPlayerLogoutToSessionHistory(e.getPlayer().getUniqueId());
 		Optional<MemberDataBean> memberData = DatabaseManager.getMemberData(playerId);
 
-		if (!memberData.isPresent() && e.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
-			Messager.msgConsole("The member data for " + playerId + " couldn't be found. WHAT IS HAPPENING PART 2!!!");
+		if (!memberData.isPresent()) {
 			return;
 		}
 
