@@ -21,9 +21,7 @@ public class MemberCommand implements CommandExecutor {
 			if (!sender.hasPermission("introvert.member")) {
 				Messager.msgSender("&cSorry you aren't built different.", sender);
 				return true;
-			}
-			
-			
+			}			
 
 			if (args.length == 0) {
 				Messager.msgSender(

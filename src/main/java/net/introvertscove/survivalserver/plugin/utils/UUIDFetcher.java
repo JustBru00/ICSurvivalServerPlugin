@@ -14,7 +14,7 @@ public class UUIDFetcher {
 	private static Mojang api;
 	private static int cacheExpiry = 86400;
 	
-	private void init() {
+	private static void init() {
 		api = new Mojang().connect();
 	}
 	
@@ -30,7 +30,7 @@ public class UUIDFetcher {
 	 * @param playerUserName
 	 * @return
 	 */
-	public Optional<UUID> getUuid(String playerUserName) {		
+	public static Optional<UUID> getUuid(String playerUserName) {		
 		if (api == null) {
 			init();
 		}
@@ -51,9 +51,25 @@ public class UUIDFetcher {
 			return Optional.empty();
 		}
 		
+		mojangUuid = nonDashedToDashedUuid(mojangUuid);
+		
 		updateCachedUuid(UUID.fromString(mojangUuid), playerUserName);
 		
 		return Optional.of(UUID.fromString(mojangUuid));
 	}
+	
+	private static String nonDashedToDashedUuid(String nonDashedUuid) {
+	    StringBuilder sb = new StringBuilder(nonDashedUuid);
+	    sb.insert(8, "-");
+	    sb = new StringBuilder(sb.toString());
+	    sb.insert(13, "-");
+	    sb = new StringBuilder(sb.toString());
+	    sb.insert(18, "-");
+	    sb = new StringBuilder(sb.toString());
+	    sb.insert(23, "-");
+
+	    return sb.toString();
+	  }
+
 	
 }

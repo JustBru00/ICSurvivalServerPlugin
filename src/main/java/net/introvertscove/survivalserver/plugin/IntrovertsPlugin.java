@@ -3,13 +3,12 @@ package net.introvertscove.survivalserver.plugin;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.introvertscove.survivalserver.plugin.commands.MemberCommand;
+import net.introvertscove.survivalserver.plugin.commands.NewMemberCommand;
 import net.introvertscove.survivalserver.plugin.commands.SpectatorAccountsCommand;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
 import net.introvertscove.survivalserver.plugin.listeners.ChatListener;
@@ -41,7 +40,7 @@ public class IntrovertsPlugin extends JavaPlugin {
 		saveDefaultConfig();
 		DatabaseManager.init();
 		
-		getCommand("member").setExecutor(new MemberCommand());
+		getCommand("member").setExecutor(new NewMemberCommand());
 		getCommand("spectatoraccounts").setExecutor(new SpectatorAccountsCommand());
 		
 		PluginManager manager = Bukkit.getPluginManager();
@@ -54,7 +53,7 @@ public class IntrovertsPlugin extends JavaPlugin {
 			public void run() {
 				if (SpectatorAccountsOptions.doDisplayActionBar()) {
 					for (Player p : Bukkit.getOnlinePlayers()) {
-						if (p.getGameMode().equals(GameMode.SPECTATOR)) {
+						if (DatabaseManager.isSpectatorAccount(p.getUniqueId())) {
 							Messager.sendActionBar("&6You are a spectator account. You can only view chunks loaded by server members.", p);
 						}
 					}

@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -91,6 +92,20 @@ public class Messager {
 		}
 
 		return assembledColorCode.toString();
+	}
+	
+	/**
+	 * This method sends the mesage inside of a Bukkit sync task.
+	 * @param msg
+	 * @param sender
+	 */
+	public static void msgSenderSync(final String msg, final CommandSender sender) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+			
+			public void run() {
+				Messager.msgSender(msg, sender);				
+			}
+		});
 	}
 
 	public static void msgConsole(String msg) {

@@ -17,30 +17,36 @@ import net.introvertscove.survivalserver.plugin.IntrovertsPlugin;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
 import net.introvertscove.survivalserver.plugin.utils.Messager;
 import net.introvertscove.survivalserver.plugin.utils.SpectatorAccountsOptions;
+import net.introvertscove.survivalserver.plugin.utils.UUIDFetcher;
 
 public class PlayerLoginLogoutListener implements Listener {
 
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent e) {
 		final UUID playerUuid = e.getUniqueId();
+		if (playerUuid != null) {
+			UUIDFetcher.updateCachedUuid(playerUuid, e.getName());
+			
+			Optional<MemberDataBean> memberData = DatabaseManager.getMemberData(playerUuid);
 
-		Optional<MemberDataBean> memberData = DatabaseManager.getMemberData(playerUuid);
+			if (!memberData.isPresent()) {
+				// NOT A MEMBER
+				// CHECK SPECTATOR ACCOUNTS
+				if (SpectatorAccountsOptions.doAllowNonMembersAsSpectator()
+						|| (!SpectatorAccountsOptions.isSpectatorAccountsDisabled()
+								&& DatabaseManager.isSpectatorAccount(playerUuid))) {
+					// is a spectator
+					return;
+				}
 
-		if (!memberData.isPresent()) {
-			// NOT A MEMBER
-			// CHECK SPECTATOR ACCOUNTS
-			if (SpectatorAccountsOptions.doAllowNonMembersAsSpectator()
-					|| (!SpectatorAccountsOptions.isSpectatorAccountsDisabled()
-							&& DatabaseManager.isSpectatorAccount(playerUuid))) {
-				// is a spectator
+				e.setLoginResult(Result.KICK_WHITELIST);
+				e.setKickMessage(Messager.color(
+						"&cSorry your account is not on the member list for the Introvert's Cove.\n&cSee &fhttps://www.introvertscove.net/applications &cto apply to join the server.\n\n&cIf you believe this is in error please contact us at contact@introvertcove.com."));
 				return;
 			}
 
-			e.setLoginResult(Result.KICK_WHITELIST);
-			e.setKickMessage(Messager.color(
-					"&cSorry your account is not on the member list for the Introvert's Cove.\n&cSee &fhttps://www.introvertscove.net/applications &cto apply to join the server.\n\n&cIf you believe this is in error please contact us at contact@introvertcove.com."));
-			return;
 		}
+
 	}
 
 	@EventHandler
@@ -49,8 +55,9 @@ public class PlayerLoginLogoutListener implements Listener {
 		DatabaseManager.logPlayerLoginToSessionHistory(playerId);
 		Optional<MemberDataBean> memberData = DatabaseManager.getMemberData(playerId);
 
-		if (!memberData.isPresent()) {			
-			if (DatabaseManager.isSpectatorAccount(playerId) && SpectatorAccountsOptions.doForceSpectatorGamemodeOnJoin()) {
+		if (!memberData.isPresent()) {
+			if (DatabaseManager.isSpectatorAccount(playerId)
+					&& SpectatorAccountsOptions.doForceSpectatorGamemodeOnJoin()) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
 
 					public void run() {
@@ -58,7 +65,8 @@ public class PlayerLoginLogoutListener implements Listener {
 						try {
 							Bukkit.getPlayer(playerId).setGameMode(GameMode.SPECTATOR);
 						} catch (NullPointerException e) {
-							Messager.msgConsole("[PlayerLoginLogoutListener] Spectator player logged out before I could set them to spectator gamemode.");
+							Messager.msgConsole(
+									"[PlayerLoginLogoutListener] Spectator player logged out before I could set them to spectator gamemode.");
 						}
 					}
 				}, 5);
