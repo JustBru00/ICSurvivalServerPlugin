@@ -69,7 +69,6 @@ public class UUIDFetcher {
 	    sb.insert(23, "-");
 
 	    return sb.toString();
-	  }
-
+	  }	
 	
 }

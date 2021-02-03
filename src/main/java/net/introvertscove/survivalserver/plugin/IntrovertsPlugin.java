@@ -2,12 +2,15 @@ package net.introvertscove.survivalserver.plugin;
 
 import java.util.logging.Logger;
 
+import javax.security.auth.login.LoginException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.introvertscove.survivalserver.discordbot.DiscordBotManager;
 import net.introvertscove.survivalserver.plugin.commands.NewMemberCommand;
 import net.introvertscove.survivalserver.plugin.commands.SpectatorAccountsCommand;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
@@ -61,6 +64,13 @@ public class IntrovertsPlugin extends JavaPlugin {
 			}
 		}, 10*20, 2*20);
 		
+		
+		try {
+			DiscordBotManager.startBot();
+		} catch (LoginException e) {
+			e.printStackTrace();
+		}
+				
 	}
 
 	public static IntrovertsPlugin getInstance() {

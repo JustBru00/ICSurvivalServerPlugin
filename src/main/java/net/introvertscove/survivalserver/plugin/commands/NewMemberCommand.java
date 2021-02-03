@@ -40,8 +40,7 @@ public class NewMemberCommand implements CommandExecutor {
 					// /member add <mcusername/uuid> <discordid>
 					if (args.length == 3) {
 						final String mcNameOrUuid = args[1];
-						
-						
+
 						long discordId = -1;
 						try {
 							discordId = Long.parseLong(args[2]);
@@ -51,56 +50,67 @@ public class NewMemberCommand implements CommandExecutor {
 									sender);
 							return true;
 						}
-						
+
 						final long actualDiscordId = discordId;
-						
+
 						if (mcNameOrUuid.length() <= 16) {
 							// MC Username
-							Messager.msgSender("&6Attempting to get that player's UUID. This might take a minute...", sender);
-							
-							// ASYNC CALL TO UUIDFETCHER
-							Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
-								
-								public void run() {
-									final Optional<UUID> possibleUuid = UUIDFetcher.getUuid(mcNameOrUuid);
-									
-									if (!possibleUuid.isPresent()) {
-										Messager.msgSenderSync("&cFailed to get the player " + mcNameOrUuid + "'s UUID. Are you sure the username is correct?", sender);
-										return;
-									}
-									
-									Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
-										
-										public void run() {
-											UUID playerUuid = possibleUuid.get();
-											Optional<MemberDataBean> possibleMemberData = DatabaseManager.getMemberData(playerUuid);
+							Messager.msgSender("&6Attempting to get that player's UUID. This might take a minute...",
+									sender);
 
-											if (possibleMemberData.isPresent()) {
-												// Already a member
-												Messager.msgSender(
-														"&cSorry that minecraft UUID is already registered as a member. Use /whois "
-																+ mcNameOrUuid + " for more information.",
+							// ASYNC CALL TO UUIDFETCHER
+							Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(),
+									new Runnable() {
+
+										public void run() {
+											final Optional<UUID> possibleUuid = UUIDFetcher.getUuid(mcNameOrUuid);
+
+											if (!possibleUuid.isPresent()) {
+												Messager.msgSenderSync(
+														"&cFailed to get the player " + mcNameOrUuid
+																+ "'s UUID. Are you sure the username is correct?",
 														sender);
 												return;
 											}
-											
-											// New member
-											MemberDataBean memberData = DatabaseManager.getDefaultMemberDataBean(playerUuid, actualDiscordId);
 
-											DatabaseManager.saveMemberDataToFile(memberData);
-											Messager.msgSender("&aSuccessfully saved new member " + memberData.getMinecraftUuid() + ".",
-													sender);
-											return;
+											Bukkit.getScheduler().scheduleSyncDelayedTask(
+													IntrovertsPlugin.getInstance(), new Runnable() {
+
+														public void run() {
+															UUID playerUuid = possibleUuid.get();
+															Optional<MemberDataBean> possibleMemberData = DatabaseManager
+																	.getMemberData(playerUuid);
+
+															if (possibleMemberData.isPresent()) {
+																// Already a member
+																Messager.msgSender(
+																		"&cSorry that minecraft UUID is already registered as a member. Use /whois "
+																				+ mcNameOrUuid
+																				+ " for more information.",
+																		sender);
+																return;
+															}
+
+															// New member
+															MemberDataBean memberData = DatabaseManager
+																	.getDefaultMemberDataBean(playerUuid,
+																			actualDiscordId);
+
+															DatabaseManager.saveMemberDataToFile(memberData);
+															Messager.msgSender(
+																	"&aSuccessfully saved new member "
+																			+ mcNameOrUuid + ".",
+																	sender);
+															return;
+														}
+													});
 										}
-									});																
-								}
-							});
-						
-							
+									});
+
 						} else {
 							// Probably UUID
 							UUID mcUuid;
-							
+
 							try {
 								mcUuid = UUID.fromString(mcNameOrUuid);
 							} catch (IllegalArgumentException e) {
@@ -109,7 +119,7 @@ public class NewMemberCommand implements CommandExecutor {
 										sender);
 								return true;
 							}
-							
+
 							Optional<MemberDataBean> possibleMemberData = DatabaseManager.getMemberData(mcUuid);
 
 							if (possibleMemberData.isPresent()) {
@@ -120,7 +130,7 @@ public class NewMemberCommand implements CommandExecutor {
 										sender);
 								return true;
 							}
-							
+
 							// New member
 							MemberDataBean memberData = DatabaseManager.getDefaultMemberDataBean(mcUuid, discordId);
 
@@ -129,17 +139,95 @@ public class NewMemberCommand implements CommandExecutor {
 									sender);
 							return true;
 						}
-						
-						return true;						
+
+						return true;
 					} else {
-						Messager.msgSender("&cSorry incorrect arugments. /member add <mcUsername,UUID> <discordId>", sender);
+						Messager.msgSender("&cSorry incorrect arugments. /member add <mcUsername,UUID> <discordId>",
+								sender);
 						return true;
 					}
 				} else if (args[0].equalsIgnoreCase("remove")) {
 					// /member remove <memberusername/UUID>
-					//TODO
+					if (args.length == 2) {
+						final String mcNameOrUuid = args[1];
+
+						if (mcNameOrUuid.length() <= 16) {
+							// USERNAME
+							Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+								
+								public void run() {
+									final Optional<UUID> possibleUuid = UUIDFetcher.getUuid(mcNameOrUuid);
+
+									if (!possibleUuid.isPresent()) {
+										Messager.msgSenderSync(
+												"&cFailed to get the player " + mcNameOrUuid
+														+ "'s UUID. Are you sure the username is correct?",
+												sender);
+										return;
+									}
+									
+									Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+										
+										public void run() {
+											
+											Optional<MemberDataBean> possibleMemberData = DatabaseManager.getMemberData(possibleUuid.get());
+
+											if (possibleMemberData.isPresent()) {
+												// Already a member
+												DatabaseManager.getMemberData().set(possibleUuid.get().toString(), "Removed Member");
+												
+												if (Bukkit.getOfflinePlayer(possibleUuid.get()).isOnline()) {
+													Bukkit.getPlayer(possibleUuid.get()).kickPlayer(Messager.color("&cYou were just removed from the server member list. See the discord server for more information."));
+												}						
+												
+												Messager.msgSender("&aRemoved the member " + mcNameOrUuid + ".", sender);
+												return;
+											} else {
+												Messager.msgSender("&cSorry I can't remove a member that doesn't exist. It probably creates a black hole or something...", sender);
+												return;
+											}
+											
+										}
+									});
+									
+								}
+							});							
+							
+						} else {
+							// UUID
+							UUID mcUuid;
+							try {
+								mcUuid = UUID.fromString(mcNameOrUuid);
+							} catch (IllegalArgumentException e) {
+								Messager.msgSender(
+										"&cSorry the new member's UUID isn't formatted correctly. Did you paste it wrong?",
+										sender);
+								return true;
+							}
+
+							Optional<MemberDataBean> possibleMemberData = DatabaseManager.getMemberData(mcUuid);
+
+							if (possibleMemberData.isPresent()) {
+								// Already a member
+								DatabaseManager.getMemberData().set(mcUuid.toString(), "Removed Member");
+								
+								if (Bukkit.getOfflinePlayer(mcUuid).isOnline()) {
+									Bukkit.getPlayer(mcUuid).kickPlayer(Messager.color("&cYou were just removed from the server member list. See the discord server for more information."));
+								}						
+								
+								Messager.msgSender("&aRemoved the member " + mcUuid + ".", sender);
+								return true;
+							} else {
+								Messager.msgSender("&cSorry I can't remove a member that doesn't exist. It probably creates a black hole or something...", sender);
+								return true;
+							}							
+						}
+					} else {
+						Messager.msgSender("&cSorry incorrect arguments. /member remove <mcUUID, mcUserName>", sender);
+						return true;
+					}
 				} else {
-					Messager.msgSender("&cSorry incorrect arugments. /member <add,remove>", sender);
+					Messager.msgSender("&cSorry incorrect arguments. /member <add,remove>", sender);
 					return true;
 				}
 			}
@@ -147,6 +235,5 @@ public class NewMemberCommand implements CommandExecutor {
 
 		return false;
 	}
-	
 
 }
