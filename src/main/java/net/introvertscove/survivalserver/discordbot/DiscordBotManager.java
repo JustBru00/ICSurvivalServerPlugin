@@ -1,10 +1,12 @@
 package net.introvertscove.survivalserver.discordbot;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.security.auth.login.LoginException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -15,6 +17,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.introvertscove.survivalserver.commandhandlers.WhoIsCommandHandler;
 import net.introvertscove.survivalserver.plugin.IntrovertsPlugin;
 import net.md_5.bungee.api.ChatColor;
 
@@ -76,17 +79,22 @@ public class DiscordBotManager extends ListenerAdapter {
 					authorized = true;
 					break;
 				}
-			}
-			
-			if (!authorized) {
-				e.getChannel().sendMessage("Not Authorized.").queue();
-				return;
-			}
+			}			
 			
 			if (msgContent.startsWith("//about")) {
+				if (!authorized) {
+					e.getChannel().sendMessage("Not Authorized.").queue();
+					return;
+				}
+				
 				e.getChannel().sendMessage("The Introvert's Cove survival server bot. Version: " + IntrovertsPlugin.getInstance().getDescription().getVersion()).queue();				
 				return;
 			} else if (msgContent.startsWith("//mcstatus")) {
+				if (!authorized) {
+					e.getChannel().sendMessage("Not Authorized.").queue();
+					return;
+				}
+				
 				int playersOnline = Bukkit.getOnlinePlayers().size();
 				int playersMax = Bukkit.getServer().getMaxPlayers();
 				
@@ -104,7 +112,23 @@ public class DiscordBotManager extends ListenerAdapter {
 					return;
 				}
 			} else if (msgContent.startsWith("//help")) {
+				if (!authorized) {
+					e.getChannel().sendMessage("Not Authorized.").queue();
+					return;
+				}
+				
 				// TODO
+			} else if (msgContent.startsWith("//whois")) {
+				if (!authorized) {
+					e.getChannel().sendMessage("Not Authorized.").queue();
+					return;
+				}
+				String cleanedUpContent = msgContent.replace("//whois", " ").trim();
+				
+				String[] args = cleanedUpContent.split("\\s+");
+				Optional<CommandSender> empty = Optional.empty();
+				new WhoIsCommandHandler().handleCommand(args, empty, Optional.of(e.getChannel()));
+				return;
 			}
 		}
 		

@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.introvertscove.survivalserver.discordbot.DiscordBotManager;
 import net.introvertscove.survivalserver.plugin.commands.NewMemberCommand;
 import net.introvertscove.survivalserver.plugin.commands.SpectatorAccountsCommand;
+import net.introvertscove.survivalserver.plugin.commands.WhoIsCommand;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
 import net.introvertscove.survivalserver.plugin.listeners.ChatListener;
 import net.introvertscove.survivalserver.plugin.listeners.PlayerLoginLogoutListener;
@@ -45,6 +46,7 @@ public class IntrovertsPlugin extends JavaPlugin {
 		
 		getCommand("member").setExecutor(new NewMemberCommand());
 		getCommand("spectatoraccounts").setExecutor(new SpectatorAccountsCommand());
+		getCommand("whois").setExecutor(new WhoIsCommand());
 		
 		PluginManager manager = Bukkit.getPluginManager();
 		
