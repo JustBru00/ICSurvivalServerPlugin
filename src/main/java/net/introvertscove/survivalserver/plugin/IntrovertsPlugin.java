@@ -11,7 +11,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.introvertscove.survivalserver.discordbot.DiscordBotManager;
-import net.introvertscove.survivalserver.plugin.commands.NewMemberCommand;
+import net.introvertscove.survivalserver.plugin.commands.IntrovertsCoveCommand;
+import net.introvertscove.survivalserver.plugin.commands.MemberCommand;
 import net.introvertscove.survivalserver.plugin.commands.SpectatorAccountsCommand;
 import net.introvertscove.survivalserver.plugin.commands.WhoIsCommand;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
@@ -44,9 +45,10 @@ public class IntrovertsPlugin extends JavaPlugin {
 		saveDefaultConfig();
 		DatabaseManager.init();
 		
-		getCommand("member").setExecutor(new NewMemberCommand());
+		getCommand("member").setExecutor(new MemberCommand());
 		getCommand("spectatoraccounts").setExecutor(new SpectatorAccountsCommand());
 		getCommand("whois").setExecutor(new WhoIsCommand());
+		getCommand("introvertscove").setExecutor(new IntrovertsCoveCommand());
 		
 		PluginManager manager = Bukkit.getPluginManager();
 		

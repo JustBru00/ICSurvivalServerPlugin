@@ -45,11 +45,14 @@ public class WhoIsCommandHandler extends CommandHandler {
 								 * 
 								 */
 								
+								
+								
 								sendMessage("&6WhoIs - Member {player_name} ({uuid})"
 										.replace("{player_name}", actualLastName)
 										.replace("{uuid}", uuid.get().toString()), sender, discordMsgChannel);
 								sendMessage("&6Last logged out: {logout_time}"
 										.replace("{logout_time}", TimeFormatter.getTimeStampFrom(memberData.getLimboStatus().getLastLogout())) + " UTC", sender, discordMsgChannel);
+								sendMessage("Total Playtime: " + DatabaseManager.getTotalPlaytimeFormatted(uuid.get()) + ".", sender, discordMsgChannel);
 								sendMessage("&6Discord ID: {discord_id}"
 										.replace("{discord_id}", String.valueOf(memberData.getDiscordId())), sender, discordMsgChannel);
 								sendMessage("&6Exempt from limbo: {limbo_exemption_active}"
@@ -86,7 +89,7 @@ public class WhoIsCommandHandler extends CommandHandler {
 			});	
 			return ResponseType.NEUTRAL;
 		} else {
-			sendMessage("&cIncorrect arguments. Please provide a member UUID or username after /whois. /whois <memberUuidorUsername>", sender, discordMsgChannel);
+			sendMessage("&cIncorrect arguments. Please provide a member UUID or username after /whois. /whois <memberUuidOrUsername>", sender, discordMsgChannel);
 			return ResponseType.FAILED;
 		}
 	}

@@ -3,6 +3,7 @@
 discord:
   bot_api_key: ''
   admin_command_channel_id: ''
+  admin_shouts_channel_id: ''
   shouts_public_notification_channel_id: ''
   admin_user_ids:
     - ''
@@ -18,6 +19,7 @@ spectator_accounts:
 limbo:
   sent_to_to_limbo_message: 'Hey there {MC_USERNAME},\nYou have been automatically been given the Limbo role.\nSee the following link for what this means for your future on The Introverts Cove:: https:://introvertscove.net/limbo-faq'
   time_from_last_logout_until:
+    nag_message: 950400
     sent_to_limbo: 1209600
     auto_retire_danger_message: 2160000
     auto_retire: 2419200    

@@ -6,6 +6,8 @@ api-version: 1.16
 softdepend: [PlaceholderAPI]
 
 commands:
+  introvertscove:
+    description: This command displays the version number of the plugin.
   member:
     description: This command allows adding and removing members to the server.
   spectatoraccounts:

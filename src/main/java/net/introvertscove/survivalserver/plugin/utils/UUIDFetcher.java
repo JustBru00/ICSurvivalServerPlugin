@@ -117,6 +117,7 @@ public class UUIDFetcher {
 		String mojangPlayerName;
 		try {
 			mojangPlayerName = api.getPlayerProfile(uuid.toString()).getUsername();
+			Messager.msgConsole("[UUIDFetcher] Got LastName of '" + mojangPlayerName + "' from UUID '" + uuid.toString() + "' from Mojang.");
 		} catch (Exception e) {
 			return Optional.empty();
 		}
@@ -147,13 +148,13 @@ public class UUIDFetcher {
 		
 		String mojangUuid;
 		try {
-			mojangUuid = api.getUUIDOfUsername(playerUserName);
+			mojangUuid = api.getUUIDOfUsername(playerUserName);			
 		} catch (Exception e) {
 			return Optional.empty();
 		}
 		
 		mojangUuid = nonDashedToDashedUuid(mojangUuid);
-		
+		Messager.msgConsole("[UUIDFetcher] Got UUID of '" + mojangUuid + "' from player name '" + playerUserName + "' from Mojang.");
 		updateCachedUuid(UUID.fromString(mojangUuid), playerUserName);
 		
 		return Optional.of(UUID.fromString(mojangUuid));

@@ -17,7 +17,7 @@ player_UUID:
       last_logout: TIMESTAMP
       nag_message:
         last_sent_at: TIMESTAMP
-        message_successful: true
+        message_sent: true
     in_limbo:
       placed_in_limbo_at: TIMESTAMP
       currently_in_limbo: true

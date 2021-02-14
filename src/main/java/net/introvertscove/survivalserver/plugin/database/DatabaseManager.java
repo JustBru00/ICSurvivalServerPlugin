@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -43,7 +44,7 @@ public class DatabaseManager {
 		return memberData;
 	}
 	
-	private static PluginFile getSessionHistory() {
+	public static PluginFile getSessionHistory() {
 		return sessionHistory;
 	}
 	
@@ -51,16 +52,43 @@ public class DatabaseManager {
 		memberData.save();
 	}
 	
-	private static void saveSessionHistory() {
+	public static void saveSessionHistory() {
 		sessionHistory.save();
 	}
 	
-	private static void reloadMemberData() {
+	public static void reloadMemberData() {
 		memberData.reload();
 	}
 	
-	private static void reloadSessionHistory() {
+	public static void reloadSessionHistory() {
 		sessionHistory.reload();
+	}
+	
+	public static String getTotalPlaytimeFormatted(UUID memberUuid) {
+		StringBuilder totalPlaytimeFormatted = new StringBuilder();
+		
+		int totalPlayTimeSeconds = sessionHistory.getInt(memberUuid.toString() + ".total_playtime_seconds");
+		
+		if (totalPlayTimeSeconds <= 0) {
+			// Less than or equals zero.
+			totalPlaytimeFormatted.append("No playtime recorded");			
+		} else {
+			
+			int days = (int) TimeUnit.SECONDS.toDays(totalPlayTimeSeconds);        
+            long hours = TimeUnit.SECONDS.toHours(totalPlayTimeSeconds) - (days * 24);
+            long minutes = TimeUnit.SECONDS.toMinutes(totalPlayTimeSeconds) - (TimeUnit.SECONDS.toHours(totalPlayTimeSeconds)* 60);
+            long seconds = TimeUnit.SECONDS.toSeconds(totalPlayTimeSeconds) - (TimeUnit.SECONDS.toMinutes(totalPlayTimeSeconds) *60);
+			
+            if (days > 0) {
+            	totalPlaytimeFormatted.append(days + " day(s), ");
+            }
+            
+            totalPlaytimeFormatted.append(hours + " hour(s), ");
+            totalPlaytimeFormatted.append(minutes + " minute(s), ");
+            totalPlaytimeFormatted.append(seconds + " second(s)");			
+		}
+		
+		return totalPlaytimeFormatted.toString();
 	}
 	
 	/**
@@ -81,6 +109,17 @@ public class DatabaseManager {
 		memberData.setLimboStatus(limboStatus);
 		memberData.setSpectatorAccountUuids(new ArrayList<UUID>());	
 		return memberData;
+	}
+	
+	public static ArrayList<MemberDataBean> getAllMembers() {
+		ArrayList<MemberDataBean> memberDataBeans = new ArrayList<MemberDataBean>();
+		for (String key : memberData.getKeys(false)) {
+			Optional<MemberDataBean> singleMember = getMemberData(UUID.fromString(key));
+			if (singleMember.isPresent()) {
+				memberDataBeans.add(singleMember.get());
+			}			
+		}
+		return memberDataBeans;
 	}
 	
 	public static boolean isSpectatorAccount(UUID uuid) {		
