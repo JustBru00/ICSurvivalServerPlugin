@@ -176,11 +176,11 @@ public class DatabaseManager {
 		memberData.set(prefix + ".last_ip", m.getLastIpAddress());
 		
 		LimboExemptionStatusBean exemption =  m.getLimboExcemptionStatus();
-		memberData.set(prefix + ".limbo.exemption.active", exemption.isExceptionActive());
-		memberData.set(prefix + ".limbo.exemption.by", exemption.getAdminWhoAddedException());
-		memberData.set(prefix + ".limbo.exemption.at", exemption.getExceptionAddedStartingAt());
-		memberData.set(prefix + ".limbo.exemption.expires_after", exemption.getExceptionExpiresAfterSeconds());
-		memberData.set(prefix + ".limbo.exemption.reason", exemption.getExcemptionReason());
+		memberData.set(prefix + ".limbo.exemption.active", exemption.isExemptionActive());
+		memberData.set(prefix + ".limbo.exemption.by", exemption.getAdminWhoAddedExemption());
+		memberData.set(prefix + ".limbo.exemption.at", exemption.getExemptionAddedStartingAt());
+		memberData.set(prefix + ".limbo.exemption.expires_after", exemption.getExemptionExpiresAfterSeconds());
+		memberData.set(prefix + ".limbo.exemption.reason", exemption.getExemptionReason());
 		
 		LimboStatusBean limboStatus = m.getLimboStatus();
 		memberData.set(prefix + ".limbo.active.last_logout", limboStatus.getLastLogout());

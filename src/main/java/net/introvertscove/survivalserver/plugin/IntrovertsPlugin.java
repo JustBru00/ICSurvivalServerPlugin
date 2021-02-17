@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.introvertscove.survivalserver.discordbot.DiscordBotManager;
 import net.introvertscove.survivalserver.plugin.commands.IntrovertsCoveCommand;
+import net.introvertscove.survivalserver.plugin.commands.LimboExemptionCommand;
 import net.introvertscove.survivalserver.plugin.commands.MemberCommand;
 import net.introvertscove.survivalserver.plugin.commands.SpectatorAccountsCommand;
 import net.introvertscove.survivalserver.plugin.commands.WhoIsCommand;
@@ -49,6 +50,7 @@ public class IntrovertsPlugin extends JavaPlugin {
 		getCommand("spectatoraccounts").setExecutor(new SpectatorAccountsCommand());
 		getCommand("whois").setExecutor(new WhoIsCommand());
 		getCommand("introvertscove").setExecutor(new IntrovertsCoveCommand());
+		getCommand("limboexemption").setExecutor(new LimboExemptionCommand());
 		
 		PluginManager manager = Bukkit.getPluginManager();
 		

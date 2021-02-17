@@ -17,9 +17,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.introvertscove.survivalserver.commandhandlers.LimboExemptionCommandHandler;
 import net.introvertscove.survivalserver.commandhandlers.MemberCommandHandler;
 import net.introvertscove.survivalserver.commandhandlers.WhoIsCommandHandler;
 import net.introvertscove.survivalserver.plugin.IntrovertsPlugin;
+import net.introvertscove.survivalserver.plugin.utils.Messager;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -31,8 +33,18 @@ import net.md_5.bungee.api.ChatColor;
 public class DiscordBotManager extends ListenerAdapter {
 
 	private static JDA jda;
+	
+	private static String commandPrefix = "//";
 
 	public static void startBot() throws LoginException {
+		String cmdPrefix = IntrovertsPlugin.getInstance().getConfig().getString("discord.command_prefix");
+		
+		if (cmdPrefix != null) {
+			commandPrefix = cmdPrefix;
+		} else {
+			Messager.msgConsole("&cCouldn't load the discord command prefix from the config.yml file. Using the default '//'.");
+		}
+		
 		String botKey = IntrovertsPlugin.getInstance().getConfig().getString("discord.bot_api_key");
 
 		jda = JDABuilder.createDefault(botKey).enableIntents(GatewayIntent.GUILD_MEMBERS)
@@ -67,7 +79,7 @@ public class DiscordBotManager extends ListenerAdapter {
 
 		// COMMANDS
 
-		if (msgContent.startsWith("//")) {
+		if (msgContent.startsWith(commandPrefix)) {
 			boolean authorized = false;
 
 			for (long id : configYml.getLongList("discord.admin_user_ids")) {
@@ -77,7 +89,7 @@ public class DiscordBotManager extends ListenerAdapter {
 				}
 			}
 
-			if (msgContent.startsWith("//about")) {
+			if (msgContent.startsWith(commandPrefix + "about")) {
 				if (!authorized) {
 					e.getChannel().sendMessage("Not Authorized.").queue();
 					return;
@@ -86,7 +98,7 @@ public class DiscordBotManager extends ListenerAdapter {
 				e.getChannel().sendMessage("The Introvert's Cove survival server bot. Version: "
 						+ IntrovertsPlugin.getInstance().getDescription().getVersion()).queue();
 				return;
-			} else if (msgContent.startsWith("//mcstatus")) {
+			} else if (msgContent.startsWith(commandPrefix + "mcstatus")) {
 				if (!authorized) {
 					e.getChannel().sendMessage("Not Authorized.").queue();
 					return;
@@ -116,30 +128,39 @@ public class DiscordBotManager extends ListenerAdapter {
 							.queue();
 					return;
 				}
-			} else if (msgContent.startsWith("//help")) {
+			} else if (msgContent.startsWith(commandPrefix + "help")) {
 				if (!authorized) {
 					e.getChannel().sendMessage("Not Authorized.").queue();
 					return;
 				}
 
 				// TODO
-			} else if (msgContent.startsWith("//whois")) {
+			} else if (msgContent.startsWith(commandPrefix + "whois")) {
 				if (!authorized) {
 					e.getChannel().sendMessage("Not Authorized.").queue();
 					return;
 				}	
 
 				Optional<CommandSender> empty = Optional.empty();
-				new WhoIsCommandHandler().handleCommand(cleanUpCommandArguments(msgContent, "//whois"), empty, Optional.of(e.getChannel()));
+				new WhoIsCommandHandler().handleCommand(cleanUpCommandArguments(msgContent, commandPrefix + "whois"), empty, Optional.of(e.getChannel()));
 				return;
-			} else if (msgContent.startsWith("//member")) {
+			} else if (msgContent.startsWith(commandPrefix + "member")) {
 				if (!authorized) {
 					e.getChannel().sendMessage("Not Authorized.").queue();
 					return;
 				}	
 
 				Optional<CommandSender> empty = Optional.empty();
-				new MemberCommandHandler().handleCommand(cleanUpCommandArguments(msgContent, "//member"), empty, Optional.of(e.getChannel()));
+				new MemberCommandHandler().handleCommand(cleanUpCommandArguments(msgContent, commandPrefix + "member"), empty, Optional.of(e.getChannel()));
+				return;
+			} else if (msgContent.startsWith(commandPrefix + "limboexemption")) {
+				if (!authorized) {
+					e.getChannel().sendMessage("Not Authorized.").queue();
+					return;
+				}	
+
+				Optional<CommandSender> empty = Optional.empty();
+				new LimboExemptionCommandHandler().handleCommand(cleanUpCommandArguments(msgContent, commandPrefix + "limboexemption"), empty, Optional.of(e.getChannel()));
 				return;
 			}
 		}

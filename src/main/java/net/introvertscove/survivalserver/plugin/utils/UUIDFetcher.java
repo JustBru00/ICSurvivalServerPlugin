@@ -15,7 +15,7 @@ import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
 public class UUIDFetcher {
 
 	private static Mojang api;
-	private static int cacheExpiry = 86400;
+	private static int cacheExpiry = 2592000;
 	
 	private static void init() {
 		api = new Mojang().connect();
@@ -28,6 +28,65 @@ public class UUIDFetcher {
 		DatabaseManager.saveUuidCache();
 	}
 	
+	/** 
+	 * This method will attempt to get the UUID from the cache.
+	 * If it can't be found. the Optional will be empty. This method will call {@link #getUuidAsyncAndRunCallback(String, EpicCallback)} to get the missing UUID in the cache.
+	 * This will make it so that a user that attempts a command again, will be able to get the command to execute the second time.
+	 * @param username
+	 */
+	public static Optional<UUID> getCachedUuidFromUsername(String username) {
+		for (String uuid : DatabaseManager.getUuidCache().getKeys(false)) {			
+			if (DatabaseManager.getUuidCache().getString(uuid + ".lastname").equals(username)) {
+				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCache().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
+					Messager.msgConsole("[UUIDFetcher] UUID was cached.");
+					return Optional.of(UUID.fromString(uuid));
+				}
+			}			
+		}
+		
+		getUuidAsyncAndRunCallback(username, new EpicCallback() {
+			
+			public void runSync(Optional<UUID> uuid, Optional<String> lastName, String originalMcUsernameOrUuid) {
+				// Do nothing				
+			}
+		});
+		
+		return Optional.empty();
+	}
+	
+	/**
+	 * This method will attempt to get the last username for the provided UUID from the cache.
+	 * If it can't be found. the Optional will be empty. This method will call {@link #getUuidAsyncAndRunCallback(String, EpicCallback)} to get the missing last name in the cache.
+	 * This will make it so that a user that attempts a command again, will be able to get the command to execute the second time.
+	 * @param uuid
+	 * @return
+	 */
+	public static Optional<String> getCachedUsernameFromUuid(UUID uuid) {
+		for (String key : DatabaseManager.getUuidCache().getKeys(false)) {	
+			if (key.equalsIgnoreCase(uuid.toString())) {
+				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCache().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
+					Messager.msgConsole("[UUIDFetcher] LastName was cached.");
+					return Optional.of(DatabaseManager.getUuidCache().getString(key + ".lastname"));
+				}
+			}						
+		}	
+		
+		getUuidAsyncAndRunCallback(uuid.toString(), new EpicCallback() {
+			
+			public void runSync(Optional<UUID> uuid, Optional<String> lastName, String originalMcUsernameOrUuid) {
+				// Do nothing				
+			}
+		});
+		
+		return Optional.empty();
+	}
+	
+	
+	/**
+	 * This method will attempt to get the UUID from the cache. If it can't be found it will be grabbed from the mojang api.
+	 * @param mcUsernameOrUuid
+	 * @param callback
+	 */
 	@SuppressWarnings("deprecation")
 	public static void getUuidAsyncAndRunCallback(final String mcUsernameOrUuid, final EpicCallback callback) {
 		Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {

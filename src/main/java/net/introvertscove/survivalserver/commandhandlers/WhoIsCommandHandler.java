@@ -56,7 +56,7 @@ public class WhoIsCommandHandler extends CommandHandler {
 								sendMessage("&6Discord ID: {discord_id}"
 										.replace("{discord_id}", String.valueOf(memberData.getDiscordId())), sender, discordMsgChannel);
 								sendMessage("&6Exempt from limbo: {limbo_exemption_active}"
-										.replace("{limbo_exemption_active}", String.valueOf(memberData.getLimboExcemptionStatus().isExceptionActive())), sender, discordMsgChannel);
+										.replace("{limbo_exemption_active}", String.valueOf(memberData.getLimboExcemptionStatus().isExemptionActive())), sender, discordMsgChannel);
 								if (memberData.getSpectatorAccountUuids().size() == 0) {
 									sendMessage("&6Spectator Accounts: None", sender, discordMsgChannel);
 								} else {

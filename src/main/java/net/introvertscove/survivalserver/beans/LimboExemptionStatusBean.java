@@ -4,60 +4,60 @@ package net.introvertscove.survivalserver.beans;
 
 public class LimboExemptionStatusBean {
 
-	private boolean exceptionActive;
-	private String adminWhoAddedException;
-	private long exceptionAddedStartingAt;
-	private int exceptionExpiresAfterSeconds;
-	private String excemptionReason;
+	private boolean exemptionActive;
+	private String adminWhoAddedExemption;
+	private long exemptionAddedStartingAt;
+	private int exemptionExpiresAfterSeconds;
+	private String exemptionReason;
 	
 	public LimboExemptionStatusBean(boolean exceptionActive, String adminWhoAddedException,
 			long exceptionAddedStartingAt, int exceptionExpiresAfterSeconds, String excemptionReason) {
 		super();
-		this.exceptionActive = exceptionActive;
-		this.adminWhoAddedException = adminWhoAddedException;
-		this.exceptionAddedStartingAt = exceptionAddedStartingAt;
-		this.exceptionExpiresAfterSeconds = exceptionExpiresAfterSeconds;
-		this.excemptionReason = excemptionReason;
+		this.exemptionActive = exceptionActive;
+		this.adminWhoAddedExemption = adminWhoAddedException;
+		this.exemptionAddedStartingAt = exceptionAddedStartingAt;
+		this.exemptionExpiresAfterSeconds = exceptionExpiresAfterSeconds;
+		this.exemptionReason = excemptionReason;
 	}
 
-	public boolean isExceptionActive() {
-		return exceptionActive;
+	public boolean isExemptionActive() {
+		return exemptionActive;
 	}
 
-	public void setExceptionActive(boolean exceptionActive) {
-		this.exceptionActive = exceptionActive;
+	public void setExemptionActive(boolean exemptionActive) {
+		this.exemptionActive = exemptionActive;
 	}
 
-	public String getAdminWhoAddedException() {
-		return adminWhoAddedException;
+	public String getAdminWhoAddedExemption() {
+		return adminWhoAddedExemption;
 	}
 
-	public void setAdminWhoAddedException(String adminWhoAddedException) {
-		this.adminWhoAddedException = adminWhoAddedException;
+	public void setAdminWhoAddedExemption(String adminWhoAddedExemption) {
+		this.adminWhoAddedExemption = adminWhoAddedExemption;
 	}
 
-	public long getExceptionAddedStartingAt() {
-		return exceptionAddedStartingAt;
+	public long getExemptionAddedStartingAt() {
+		return exemptionAddedStartingAt;
 	}
 
-	public void setExceptionAddedStartingAt(long exceptionAddedStartingAt) {
-		this.exceptionAddedStartingAt = exceptionAddedStartingAt;
+	public void setExemptionAddedStartingAt(long exemptionAddedStartingAt) {
+		this.exemptionAddedStartingAt = exemptionAddedStartingAt;
 	}
 
-	public int getExceptionExpiresAfterSeconds() {
-		return exceptionExpiresAfterSeconds;
+	public int getExemptionExpiresAfterSeconds() {
+		return exemptionExpiresAfterSeconds;
 	}
 
-	public void setExceptionExpiresAfterSeconds(int exceptionExpiresAfterSeconds) {
-		this.exceptionExpiresAfterSeconds = exceptionExpiresAfterSeconds;
+	public void setExemptionExpiresAfterSeconds(int exemptionExpiresAfterSeconds) {
+		this.exemptionExpiresAfterSeconds = exemptionExpiresAfterSeconds;
 	}
 
-	public String getExcemptionReason() {
-		return excemptionReason;
+	public String getExemptionReason() {
+		return exemptionReason;
 	}
 
-	public void setExcemptionReason(String excemptionReason) {
-		this.excemptionReason = excemptionReason;
+	public void setExemptionReason(String exemptionReason) {
+		this.exemptionReason = exemptionReason;
 	}
 		
 }
