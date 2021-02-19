@@ -1,5 +1,5 @@
 name: IntrovertsCoveSurvivalServer
-version: 1.2-INDEV
+version: 1.2
 main: net.introvertscove.survivalserver.plugin.IntrovertsPlugin
 authors: [JustBru00, Justin Brubaker]
 api-version: 1.16
@@ -18,3 +18,5 @@ commands:
     description: This command shows a lot of player information based off of the member MCusername.       
   sessionhistory:
     description: This command displays the given players session history.      
+  limboexemption:
+    description: This command handles limbo exemptions.  
