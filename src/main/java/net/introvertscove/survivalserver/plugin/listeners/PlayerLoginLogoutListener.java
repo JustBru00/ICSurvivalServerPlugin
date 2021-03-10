@@ -89,6 +89,7 @@ public class PlayerLoginLogoutListener implements Listener {
 		}
 
 		memberData.get().setLastIpAddress(e.getPlayer().getAddress().getAddress().getHostAddress());
+		memberData.get().getLimboStatus().setNagMessageSuccessful(false);
 
 		DatabaseManager.saveMemberDataToFile(memberData.get());
 	}
