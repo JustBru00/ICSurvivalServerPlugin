@@ -12,10 +12,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.introvertscove.survivalserver.commandhandlers.LimboExemptionCommandHandler;
 import net.introvertscove.survivalserver.commandhandlers.MemberCommandHandler;
@@ -63,6 +67,50 @@ public class DiscordBotManager extends ListenerAdapter {
 
 	public static void stopBot() {
 		jda.shutdownNow();
+	}
+	
+	/**
+	 * Attempts to send the given discord user a private message.
+	 * BLOCKING
+	 * @param msg
+	 * @param discordId
+	 * @return True if the message was sent successfully. False if not.
+	 */
+	public static void sendDirectMessageToDiscordUser(String msg, long discordId) {
+		RestAction<User> restAction = jda.retrieveUserById(discordId);
+		
+		User discordUser = restAction.complete();
+		
+		if (discordUser == null) {
+			Messager.msgConsole("&cFailed to send direct message. DISCORD USER NULL Full Message: " + msg);			
+			return;
+		}
+		
+		discordUser.openPrivateChannel().flatMap(channel -> channel.sendMessage(msg)).queue(success -> {}, error -> {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+				
+				@Override
+				public void run() {
+					Messager.msgConsole("&cFailed to send direct message to " + discordUser.getAsTag() + " Full Message: " + msg);					
+				}
+			});			
+		});		
+	}
+	
+	/**
+	 * Attempts to send the admin shouts channel a message.
+	 * @param message
+	 */
+	public static void sendMessageToAdminAnnouncementChannel(String message) {
+		long adminShoutsChannelId = IntrovertsPlugin.getInstance().getConfig().getLong("discord.admin_shouts_channel_id");
+		
+		TextChannel adminShoutsChannel =  jda.getTextChannelById(adminShoutsChannelId);
+		
+		if (adminShoutsChannel.canTalk()) {
+			adminShoutsChannel.sendMessage(message).queue();
+		} else {
+			Messager.msgConsole("&cI can't talk in the admin shouts channel! Tried to send message: " + message);
+		}
 	}
 
 	@Override

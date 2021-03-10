@@ -11,6 +11,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.introvertscove.survivalserver.discordbot.DiscordBotManager;
+import net.introvertscove.survivalserver.limbo.LimboManager;
 import net.introvertscove.survivalserver.plugin.commands.IntrovertsCoveCommand;
 import net.introvertscove.survivalserver.plugin.commands.LimboExemptionCommand;
 import net.introvertscove.survivalserver.plugin.commands.MemberCommand;
@@ -30,16 +31,17 @@ public class IntrovertsPlugin extends JavaPlugin {
 	public static String prefix = Messager.color("&8[&bIntroverts&fCove&8] &6");
 	
 	private static int spectatorActionBarTaskId = -1;
-	
+	private static int limboTaskId = -1;
 
 	@Override
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(spectatorActionBarTaskId);
-		
+		Bukkit.getScheduler().cancelTask(limboTaskId);
 		
 		instance = null;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
 		instance = this;
@@ -69,6 +71,15 @@ public class IntrovertsPlugin extends JavaPlugin {
 				}				
 			}
 		}, 10*20, 2*20);
+		
+		limboTaskId = Bukkit.getScheduler().scheduleAsyncRepeatingTask(instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				LimboManager.runEveryThirtyMinutesAsync();
+				
+			}
+		}, 20*10, 20*30);
 		
 		
 		try {

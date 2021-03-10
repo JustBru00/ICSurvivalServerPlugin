@@ -12,6 +12,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import net.introvertscove.survivalserver.beans.LimboStatusBean;
 import net.introvertscove.survivalserver.beans.MemberDataBean;
 import net.introvertscove.survivalserver.plugin.IntrovertsPlugin;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
@@ -43,6 +44,19 @@ public class PlayerLoginLogoutListener implements Listener {
 				e.setKickMessage(Messager.color(
 						"&cSorry your account is not on the member list for the Introvert's Cove.\n&cSee &fhttps://www.introvertscove.net/applications &cto apply to join the server.\n\n&cIf you believe this is in error please contact us at contact@introvertcove.com."));
 				return;
+			} else {
+				// IS A MEMBER
+				// Check Limbo Status.
+				LimboStatusBean limboStatus = memberData.get().getLimboStatus();
+				if (limboStatus.isCurrentlyInLimbo()) {
+					e.setLoginResult(Result.KICK_WHITELIST);
+					e.setKickMessage(Messager.color("&cYou are currently in limbo.\nYou must talk to a server administrator to get out of limbo."));
+					return;
+				} else if (limboStatus.isRetiredMessageSentToPlayer()) {
+					e.setLoginResult(Result.KICK_WHITELIST);
+					e.setKickMessage(Messager.color("&cYou have been automatically retired because of inactivity.\nYou will need to go though the application process again as if you were a new player."));
+					return;
+				}
 			}
 
 		}
