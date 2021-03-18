@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import net.introvertscove.survivalserver.beans.LimboStatusBean;
 import net.introvertscove.survivalserver.beans.MemberDataBean;
+import net.introvertscove.survivalserver.discordbot.DiscordBotManager;
 import net.introvertscove.survivalserver.plugin.IntrovertsPlugin;
 import net.introvertscove.survivalserver.plugin.database.DatabaseManager;
 import net.introvertscove.survivalserver.plugin.utils.Messager;
@@ -63,6 +64,7 @@ public class PlayerLoginLogoutListener implements Listener {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerLogin(PlayerJoinEvent e) {
 		final UUID playerId = e.getPlayer().getUniqueId();
@@ -89,7 +91,19 @@ public class PlayerLoginLogoutListener implements Listener {
 		}
 
 		memberData.get().setLastIpAddress(e.getPlayer().getAddress().getAddress().getHostAddress());
-		memberData.get().getLimboStatus().setNagMessageSuccessful(false);
+		
+		if (memberData.get().getLimboStatus().isNagMessageSuccessful()) {
+			Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+				
+				@Override
+				public void run() {
+					DiscordBotManager.sendMessageToAdminAnnouncementChannel("Member " + e.getPlayer().getName() + " just joined the server. This has reset the limbo nag message.");					
+				}
+			});
+			memberData.get().getLimboStatus().setNagMessageSuccessful(false);
+			memberData.get().getLimboStatus().setLastLogout(System.currentTimeMillis());
+		} 
+		
 
 		DatabaseManager.saveMemberDataToFile(memberData.get());
 	}
