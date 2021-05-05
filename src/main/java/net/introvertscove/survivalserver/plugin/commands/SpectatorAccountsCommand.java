@@ -97,7 +97,7 @@ public class SpectatorAccountsCommand implements CommandExecutor {
 						return true;
 					}
 
-					for (String uuidKey : DatabaseManager.getMemberData().getKeys(false)) {
+					for (String uuidKey : DatabaseManager.getMemberDataFile().getKeys(false)) {
 						Optional<MemberDataBean> possibleMemberData = DatabaseManager
 								.getMemberData(UUID.fromString(uuidKey));
 						if (possibleMemberData.isPresent()) {

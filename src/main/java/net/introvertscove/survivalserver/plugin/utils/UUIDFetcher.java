@@ -23,9 +23,9 @@ public class UUIDFetcher {
 	
 	
 	public static void updateCachedUuid(UUID uuid, String playerUserName) {
-		DatabaseManager.getUuidCache().set(uuid.toString() + ".lastname", playerUserName);
-		DatabaseManager.getUuidCache().set(uuid.toString() + ".at", System.currentTimeMillis());
-		DatabaseManager.saveUuidCache();
+		DatabaseManager.getUuidCacheFile().set(uuid.toString() + ".lastname", playerUserName);
+		DatabaseManager.getUuidCacheFile().set(uuid.toString() + ".at", System.currentTimeMillis());
+		DatabaseManager.saveUuidCacheFile();
 	}
 	
 	/** 
@@ -35,9 +35,9 @@ public class UUIDFetcher {
 	 * @param username
 	 */
 	public static Optional<UUID> getCachedUuidFromUsername(String username) {
-		for (String uuid : DatabaseManager.getUuidCache().getKeys(false)) {			
-			if (DatabaseManager.getUuidCache().getString(uuid + ".lastname").equals(username)) {
-				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCache().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
+		for (String uuid : DatabaseManager.getUuidCacheFile().getKeys(false)) {			
+			if (DatabaseManager.getUuidCacheFile().getString(uuid + ".lastname").equals(username)) {
+				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCacheFile().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
 					Messager.msgConsole("[UUIDFetcher] UUID was cached.");
 					return Optional.of(UUID.fromString(uuid));
 				}
@@ -62,11 +62,11 @@ public class UUIDFetcher {
 	 * @return
 	 */
 	public static Optional<String> getCachedUsernameFromUuid(UUID uuid) {
-		for (String key : DatabaseManager.getUuidCache().getKeys(false)) {	
+		for (String key : DatabaseManager.getUuidCacheFile().getKeys(false)) {	
 			if (key.equalsIgnoreCase(uuid.toString())) {
-				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCache().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
+				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCacheFile().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
 					Messager.msgConsole("[UUIDFetcher] LastName was cached.");
-					return Optional.of(DatabaseManager.getUuidCache().getString(key + ".lastname"));
+					return Optional.of(DatabaseManager.getUuidCacheFile().getString(key + ".lastname"));
 				}
 			}						
 		}	
@@ -164,11 +164,11 @@ public class UUIDFetcher {
 			init();
 		}		
 
-		for (String key : DatabaseManager.getUuidCache().getKeys(false)) {	
+		for (String key : DatabaseManager.getUuidCacheFile().getKeys(false)) {	
 			if (key.equalsIgnoreCase(uuid.toString())) {
-				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCache().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
+				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCacheFile().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
 					Messager.msgConsole("[UUIDFetcher] LastName was cached. Skipping Mojang API call.");
-					return Optional.of(DatabaseManager.getUuidCache().getString(key + ".lastname"));
+					return Optional.of(DatabaseManager.getUuidCacheFile().getString(key + ".lastname"));
 				}
 			}						
 		}	
@@ -196,9 +196,9 @@ public class UUIDFetcher {
 			init();
 		}
 		
-		for (String uuid : DatabaseManager.getUuidCache().getKeys(false)) {			
-			if (DatabaseManager.getUuidCache().getString(uuid + ".lastname").equals(playerUserName)) {
-				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCache().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
+		for (String uuid : DatabaseManager.getUuidCacheFile().getKeys(false)) {			
+			if (DatabaseManager.getUuidCacheFile().getString(uuid + ".lastname").equals(playerUserName)) {
+				if (Duration.between(Instant.ofEpochMilli(DatabaseManager.getUuidCacheFile().getLong(uuid + ".at")), Instant.now()).getSeconds() < cacheExpiry) {
 					Messager.msgConsole("[UUIDFetcher] UUID was cached. Skipping Mojang API call.");
 					return Optional.of(UUID.fromString(uuid));
 				}

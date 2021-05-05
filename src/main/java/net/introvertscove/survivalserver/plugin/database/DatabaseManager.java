@@ -32,35 +32,35 @@ public class DatabaseManager {
 		uuidCache = new PluginFile(IntrovertsPlugin.getInstance(), "uuid_cache.yml");	
 	}	
 	
-	public static PluginFile getUuidCache() {
+	public static PluginFile getUuidCacheFile() {
 		return uuidCache;
 	}
 	
-	public static void saveUuidCache() {
+	public static void saveUuidCacheFile() {
 		uuidCache.save();
 	}
 	
-	public static PluginFile getMemberData() {
+	public static PluginFile getMemberDataFile() {
 		return memberData;
 	}
 	
-	public static PluginFile getSessionHistory() {
+	public static PluginFile getSessionHistoryFile() {
 		return sessionHistory;
 	}
 	
-	public static void saveMemberData() {
+	public static void saveMemberDataFile() {
 		memberData.save();
 	}
 	
-	public static void saveSessionHistory() {
+	public static void saveSessionHistoryFile() {
 		sessionHistory.save();
 	}
 	
-	public static void reloadMemberData() {
+	public static void reloadMemberDataFile() {
 		memberData.reload();
 	}
 	
-	public static void reloadSessionHistory() {
+	public static void reloadSessionHistoryFile() {
 		sessionHistory.reload();
 	}
 	

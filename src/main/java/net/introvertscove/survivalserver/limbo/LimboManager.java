@@ -63,23 +63,86 @@ public class LimboManager {
 			Instant lastLogout = Instant.ofEpochMilli(limboStatus.getLastLogout());
 			Instant now = Instant.now();
 			
+			/**
 			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.nag_message")) {
 				if (!limboStatus.isNagMessageSuccessful()) {
 					sendNagMessage(limboStatus, member);
 				} 				
-			}
+			}**/
 			
 			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.sent_to_limbo")) {
-				// TODO
+				// Send the player to limbo
+				if (!limboStatus.isCurrentlyInLimbo()) {
+					// send limbo message
+					// Give limbo role
+					// Announce to admins
+				}
 			}
 			
-			// TODO Send to limbo section
+			// Auto Retire Danger
+			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.auto_retire_danger_message")) {
+				// Send the player the auto retire danger message.
+				if (!limboStatus.isRetiredDangerMessageSent()) {
+					// send the retire danger message
+					// Announce to admins
+				}
+			}
+			
+			// Auto Retire
+			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.auto_retire")) {
+				// Send the player the auto retire danger message.
+				if (!limboStatus.isRetiredMessageSentToPlayer()) {
+					// send the retire danger message
+					// Give retired without honors role.
+					// Announce to admins
+				}
+			}
 			
 			// TODO RESET ALL MESSAGE SENDING IF THE PLAYER LOGS IN SUCCESSFULLY PLAYERJOINEVENT
 			// TODO BLOCK LIMBO PLAYERS IN PRELOGIN
 		}
 
 	}
+	
+	private static void sendToLimbo(LimboStatusBean limboStatus, MemberDataBean member) {
+		// Limbo this player					
+		UUIDFetcher.getUuidAsyncAndRunCallback(member.getMinecraftUuid().toString(), new EpicCallback() {
+			
+			@SuppressWarnings("deprecation")
+			@Override
+			public void runSync(Optional<UUID> uuid, Optional<String> lastName, String originalMcUsernameOrUuid) {
+				if (!lastName.isPresent()) {
+					Messager.msgConsole("&c[LimboManager-SendToLimbo] Something went wrong while getting the last name of UUID. " + uuid.get());
+					return;
+				}
+				
+				
+				Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+					
+					@Override
+					public void run() {
+						String limboMessage = Reference.inLimboMessage;
+						limboMessage = limboMessage.replace("{MEMBER_NAME}", lastName.get());
+						DiscordBotManager.sendDirectMessageToDiscordUser(limboMessage, member.getDiscordId());				
+						DiscordBotManager.sendMessageToAdminAnnouncementChannel("Member " + lastName.get() + " was just sent to limbo. (14 days until auto retirement)");
+						// TODO Role change
+						Bukkit.getScheduler().scheduleSyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+							
+							@Override
+							public void run() {
+								Messager.msgConsole("&6Sent member " + lastName.get() + " to limbo.");											
+								limboStatus.setCurrentlyInLimbo(true);
+								limboStatus.setInLimboMessageSent(true);
+								limboStatus.setPlacedInLimboAt(System.currentTimeMillis());
+								DatabaseManager.saveMemberDataToFile(member);									
+							}
+						});
+					}
+				});							
+			}
+		});
+	}
+	
 	
 	private static void sendNagMessage(LimboStatusBean limboStatus, MemberDataBean member) {
 		// Nag this player					

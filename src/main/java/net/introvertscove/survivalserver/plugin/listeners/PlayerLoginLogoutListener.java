@@ -49,11 +49,11 @@ public class PlayerLoginLogoutListener implements Listener {
 				// IS A MEMBER
 				// Check Limbo Status.
 				LimboStatusBean limboStatus = memberData.get().getLimboStatus();
-				if (limboStatus.isCurrentlyInLimbo()) {
+				if (limboStatus.isCurrentlyInLimbo() && !memberData.get().getLimboExcemptionStatus().isExemptionActive()) {
 					e.setLoginResult(Result.KICK_WHITELIST);
 					e.setKickMessage(Messager.color("&cYou are currently in limbo.\nYou must talk to a server administrator to get out of limbo."));
 					return;
-				} else if (limboStatus.isRetiredMessageSentToPlayer()) {
+				} else if (limboStatus.isRetiredMessageSentToPlayer() && !memberData.get().getLimboExcemptionStatus().isExemptionActive()) {
 					e.setLoginResult(Result.KICK_WHITELIST);
 					e.setKickMessage(Messager.color("&cYou have been automatically retired because of inactivity.\nYou will need to go though the application process again as if you were a new player."));
 					return;
@@ -92,6 +92,8 @@ public class PlayerLoginLogoutListener implements Listener {
 
 		memberData.get().setLastIpAddress(e.getPlayer().getAddress().getAddress().getHostAddress());
 		
+		// Reset Limbo Stuff Below
+		
 		if (memberData.get().getLimboStatus().isNagMessageSuccessful()) {
 			Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
 				
@@ -104,6 +106,17 @@ public class PlayerLoginLogoutListener implements Listener {
 			memberData.get().getLimboStatus().setLastLogout(System.currentTimeMillis());
 		} 
 		
+		if (memberData.get().getLimboStatus().isCurrentlyInLimbo()) {
+			memberData.get().getLimboStatus().setCurrentlyInLimbo(false);
+		}
+		
+		if (memberData.get().getLimboStatus().isRetiredDangerMessageSent()) {
+			memberData.get().getLimboStatus().setRetiredDangerMessageSent(false);
+		}
+		
+		if (memberData.get().getLimboStatus().isRetiredMessageSentToPlayer()) {
+			memberData.get().getLimboStatus().setRetiredMessageSentToPlayer(false);
+		}
 
 		DatabaseManager.saveMemberDataToFile(memberData.get());
 	}

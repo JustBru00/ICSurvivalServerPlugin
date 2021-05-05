@@ -99,12 +99,12 @@ public class MemberCommandHandler extends CommandHandler {
 
 						if (maybeMemberData.isPresent()) {
 							// Already a member
-							DatabaseManager.getMemberData().set(uuid.get().toString(), "Removed Member");
+							DatabaseManager.getMemberDataFile().set(uuid.get().toString(), "Removed Member");
 							
 							if (Bukkit.getOfflinePlayer(uuid.get()).isOnline()) {
 								Bukkit.getPlayer(uuid.get()).kickPlayer(Messager.color("&cYou were just removed from the server member list. See the discord server for more information."));
 							}						
-							
+							DatabaseManager.saveMemberDataFile(); // Closes #14
 							sendMessage("&aRemoved the member " + lastName.get() + ".", sender, discordMsgChannel);
 							return;
 						} else {

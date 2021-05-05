@@ -12,8 +12,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -111,6 +113,23 @@ public class DiscordBotManager extends ListenerAdapter {
 		} else {
 			Messager.msgConsole("&cI can't talk in the admin shouts channel! Tried to send message: " + message);
 		}
+	}
+	
+	public static void addRoleToDiscordUser(long roleId, long discordId, long guildId) {
+		Role role = jda.getRoleById(roleId);
+
+		if (role == null) {
+			Messager.msgConsole(commandPrefix);
+		}
+		
+		Guild guild = jda.getGuildById(guildId);
+		
+		if (guild == null) {
+			Messager.msgConsole("&cFailed to get the guild " + guildId + " are you sure it exists?");			
+			return;
+		}
+		
+		guild.addRoleToMember(discordId, role).queue();		
 	}
 
 	@Override
