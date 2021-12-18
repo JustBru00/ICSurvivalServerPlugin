@@ -119,7 +119,7 @@ public class DiscordBotManager extends ListenerAdapter {
 		Role role = jda.getRoleById(roleId);
 
 		if (role == null) {
-			Messager.msgConsole(commandPrefix);
+			Messager.msgConsole("&cFailed to get the role " + roleId + " are you sure it exists?");
 		}
 		
 		Guild guild = jda.getGuildById(guildId);
@@ -130,6 +130,23 @@ public class DiscordBotManager extends ListenerAdapter {
 		}
 		
 		guild.addRoleToMember(discordId, role).queue();		
+	}
+	
+	public static void removeRoleFromDiscordUser(long roleId, long discordId, long guildId) {
+		Role role = jda.getRoleById(roleId);
+
+		if (role == null) {
+			Messager.msgConsole("&cFailed to get the role " + roleId + " are you sure it exists?");
+		}
+		
+		Guild guild = jda.getGuildById(guildId);
+		
+		if (guild == null) {
+			Messager.msgConsole("&cFailed to get the guild " + guildId + " are you sure it exists?");			
+			return;
+		}
+				
+		guild.removeRoleFromMember(discordId, role).queue();
 	}
 
 	@Override

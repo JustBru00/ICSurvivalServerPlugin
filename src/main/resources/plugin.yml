@@ -1,8 +1,8 @@
 name: IntrovertsCoveSurvivalServer
-version: 1.4-INDEV
+version: 1.4
 main: net.introvertscove.survivalserver.plugin.IntrovertsPlugin
 authors: [JustBru00, Justin Brubaker]
-api-version: 1.16
+api-version: 1.18
 softdepend: [PlaceholderAPI]
 
 commands:

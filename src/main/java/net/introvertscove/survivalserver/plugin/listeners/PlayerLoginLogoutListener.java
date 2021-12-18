@@ -23,6 +23,7 @@ import net.introvertscove.survivalserver.plugin.utils.UUIDFetcher;
 
 public class PlayerLoginLogoutListener implements Listener {
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent e) {
 		final UUID playerUuid = e.getUniqueId();
@@ -50,10 +51,24 @@ public class PlayerLoginLogoutListener implements Listener {
 				// Check Limbo Status.
 				LimboStatusBean limboStatus = memberData.get().getLimboStatus();
 				if (limboStatus.isCurrentlyInLimbo() && !memberData.get().getLimboExcemptionStatus().isExemptionActive()) {
+					Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+						
+						@Override
+						public void run() {
+							DiscordBotManager.sendMessageToAdminAnnouncementChannel("Member " + e.getName() + " just attempted to join the server, but they were blocked because they are in limbo.");					
+						}
+					});
 					e.setLoginResult(Result.KICK_WHITELIST);
 					e.setKickMessage(Messager.color("&cYou are currently in limbo.\nYou must talk to a server administrator to get out of limbo."));
 					return;
 				} else if (limboStatus.isRetiredMessageSentToPlayer() && !memberData.get().getLimboExcemptionStatus().isExemptionActive()) {
+					Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
+						
+						@Override
+						public void run() {
+							DiscordBotManager.sendMessageToAdminAnnouncementChannel("Member " + e.getName() + " just attempted to join the server, but they were blocked because they are retired");					
+						}
+					});
 					e.setLoginResult(Result.KICK_WHITELIST);
 					e.setKickMessage(Messager.color("&cYou have been automatically retired because of inactivity.\nYou will need to go though the application process again as if you were a new player."));
 					return;
@@ -95,13 +110,6 @@ public class PlayerLoginLogoutListener implements Listener {
 		// Reset Limbo Stuff Below
 		
 		if (memberData.get().getLimboStatus().isNagMessageSuccessful()) {
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(IntrovertsPlugin.getInstance(), new Runnable() {
-				
-				@Override
-				public void run() {
-					DiscordBotManager.sendMessageToAdminAnnouncementChannel("Member " + e.getPlayer().getName() + " just joined the server. This has reset the limbo nag message.");					
-				}
-			});
 			memberData.get().getLimboStatus().setNagMessageSuccessful(false);
 			memberData.get().getLimboStatus().setLastLogout(System.currentTimeMillis());
 		} 

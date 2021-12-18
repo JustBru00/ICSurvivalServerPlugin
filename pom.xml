@@ -34,12 +34,13 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
-				<configuration>					
-                    <source>${project.java.version}</source>
-                    <target>${project.java.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>   
-                    <fork>true</fork>
-					<executable>C:\Program Files\AdoptOpenJDK\jdk-11.0.9.11-hotspot\bin\javac</executable>            
+				<configuration>
+					<source>${project.java.version}</source>
+					<target>${project.java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<fork>true</fork>
+					<executable>C:\Program
+						Files\AdoptOpenJDK\jdk-11.0.9.11-hotspot\bin\javac</executable>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -64,6 +65,11 @@
 			<id>placeholderapi</id>
 			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
+		<repository>
+			<id>dv8tion</id>
+			<name>m2-dv8tion</name>
+			<url>https://m2.dv8tion.net/releases</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -71,18 +77,18 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.16.4-R0.1-SNAPSHOT</version>
+			<version>1.18.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.SparklingComet</groupId>
+			<groupId>org.shanerx</groupId>
 			<artifactId>java-mojang-api</artifactId>
-			<version>-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>4.2.0_168</version>
+			<version>4.4.0_350</version>
 			<exclusions>
 				<exclusion>
 					<groupId>club.minnced</groupId>

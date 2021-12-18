@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import net.introvertscove.survivalserver.beans.LimboStatusBean;
 import net.introvertscove.survivalserver.beans.MemberDataBean;
@@ -19,6 +20,7 @@ import net.introvertscove.survivalserver.plugin.utils.UUIDFetcher;
 
 public class LimboManager {
 
+	@SuppressWarnings("deprecation")
 	public static void runEveryThirtyMinutesAsync() {
 
 		// Check through all members
@@ -63,44 +65,67 @@ public class LimboManager {
 			Instant lastLogout = Instant.ofEpochMilli(limboStatus.getLastLogout());
 			Instant now = Instant.now();
 			
-			/**
+			Optional<String> possibleUsername = UUIDFetcher.getCachedUsernameFromUuid(member.getMinecraftUuid());
+			String username;
+			if (possibleUsername.isPresent()) {
+				username = possibleUsername.get();
+			} else {
+				username = member.getMinecraftUuid().toString();
+			}
+			
+			
 			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.nag_message")) {
 				if (!limboStatus.isNagMessageSuccessful()) {
 					sendNagMessage(limboStatus, member);
 				} 				
-			}**/
-			
-			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.sent_to_limbo")) {
-				// Send the player to limbo
-				if (!limboStatus.isCurrentlyInLimbo()) {
-					// send limbo message
-					// Give limbo role
-					// Announce to admins
-				}
 			}
+			
+			
+			return;
+			
+			//FileConfiguration config = IntrovertsPlugin.getInstance().getConfig();
+			
+			//if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.sent_to_limbo")) {
+				// Send the player to limbo
+			//	if (!limboStatus.isCurrentlyInLimbo()) {
+					// send limbo message
+			//		DiscordBotManager.sendDirectMessageToDiscordUser(Reference.inLimboMessage.replace("{MEMBER_NAME}", username), member.getDiscordId());
+					// Give limbo role
+			//		DiscordBotManager.addRoleToDiscordUser(config.getInt("discord.in_limbo_role_id"), member.getDiscordId(), config.getInt("discord.guild_id"));
+					// Announce to admins
+			//		DiscordBotManager.sendMessageToAdminAnnouncementChannel(String.format("%s was just sent to limbo. (Offline for 8 days)", username));
+					
+			//		limboStatus.setInLimboMessageSent(true);
+			//		limboStatus.setInLimboMessageSentAt(System.currentTimeMillis());
+			//		limboStatus.setCurrentlyInLimbo(true);
+			//		DatabaseManager.saveMemberDataToFile(member);	
+			//	}
+		//	}
 			
 			// Auto Retire Danger
-			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.auto_retire_danger_message")) {
+			//if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.auto_retire_danger_message")) {
 				// Send the player the auto retire danger message.
-				if (!limboStatus.isRetiredDangerMessageSent()) {
+			//	if (!limboStatus.isRetiredDangerMessageSent()) {
 					// send the retire danger message
+			//		DiscordBotManager.sendDirectMessageToDiscordUser(Reference.inLimboMessage.replace("{MEMBER_NAME}", username), member.getDiscordId());
 					// Announce to admins
 				}
-			}
+		//	}
 			
 			// Auto Retire
-			if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.auto_retire")) {
+		//	if (Duration.between(lastLogout, now).getSeconds() > IntrovertsPlugin.getInstance().getConfig().getInt("limbo.time_from_last_logout_until.auto_retire")) {
 				// Send the player the auto retire danger message.
-				if (!limboStatus.isRetiredMessageSentToPlayer()) {
+			//	if (!limboStatus.isRetiredMessageSentToPlayer()) {
 					// send the retire danger message
 					// Give retired without honors role.
 					// Announce to admins
-				}
-			}
+			//	}
+		//	}
 			
 			// TODO RESET ALL MESSAGE SENDING IF THE PLAYER LOGS IN SUCCESSFULLY PLAYERJOINEVENT
 			// TODO BLOCK LIMBO PLAYERS IN PRELOGIN
-		}
+	//	}
+	
 
 	}
 	
